@@ -1,0 +1,102 @@
+// Originator (создает и хранит состояния)
+public class TextEditor
+{
+    public string Text { get; private set; }
+
+    public void Write(string text)
+    {
+        Text += text;
+    }
+
+    // Создает снимок текущего состояния
+    public TextMemento CreateMemento()
+    {
+        return new TextMemento(Text);
+    }
+
+    // Восстанавливает состояние из снимка
+    public void RestoreMemento(TextMemento memento)
+    {
+        Text = memento.GetSavedText();
+    }
+}
+
+// Memento (хранит состояние)
+public class TextMemento
+{
+    private readonly string _text;
+
+    public TextMemento(string text)
+    {
+        _text = text;
+    }
+
+    public string GetSavedText()
+    {
+        return _text;
+    }
+}
+
+// Caretaker (управляет снимками)
+public class History
+{
+    private readonly Stack<TextMemento> _mementos = new Stack<TextMemento>();
+
+    public void Save(TextEditor editor)
+    {
+        _mementos.Push(editor.CreateMemento());
+    }
+
+    public void Undo(TextEditor editor)
+    {
+        if (_mementos.Count > 0)
+        {
+            editor.RestoreMemento(_mementos.Pop());
+        }
+    }
+}
+class Program
+{
+    static void Main()
+    {
+        var editor = new TextEditor();
+        var history = new History();
+
+        // Пишем текст и сохраняем состояние
+        editor.Write("Привет, ");
+        history.Save(editor);
+
+        editor.Write("мир!");
+        Console.WriteLine(editor.Text); // "Привет, мир!"
+
+        // Откатываем последнее изменение
+        history.Undo(editor);
+        Console.WriteLine(editor.Text); // "Привет, "
+    }
+}
+
+Memento (Хранитель) — поведенческий паттерн проектирования, который позволяет сохранять и восстанавливать предыдущие состояния объектов, не нарушая инкапсуляцию.
+
+Тип паттерна
+Memento относится к поведенческим паттернам, так как он определяет алгоритмы и способы взаимодействия объектов между собой.
+
+Основная цель паттерна Memento — обеспечить возможность сохранения и последующего восстановления внутреннего состояния объекта без нарушения принципов инкапсуляции.
+Паттерн особенно полезен в следующих случаях:
+Когда необходимо реализовать функцию отмены/повтора действий.
+При работе с редакторами документов.
+В системах контроля версий.
+При необходимости сохранения промежуточных состояний объектов.
+
+Компоненты паттерна
+Originator — объект, состояние которого сохраняется
+Memento — объект, хранящий состояние Originator
+Caretaker — объект, управляющий сохраненными состояниями
+
+Метафоры из реального мира
+Фотоальбом — сохранение моментов жизни в виде фотографий
+
+Потенциальные проблемы
+При использовании паттерна Memento могут возникнуть следующие проблемы:
+Рост потребления памяти — при сохранении большого количества состояний
+Сложность реализации — необходимость корректной сериализации/десериализации состояния
+Проблемы безопасности — если состояние содержит конфиденциальную информацию
