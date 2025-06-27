@@ -1,0 +1,130 @@
+// Интерфейс элемента, который принимает посетителя
+public interface IShape
+{
+    void Accept(IShapeVisitor visitor);
+}
+
+// Интерфейс посетителя
+public interface IShapeVisitor
+{
+    void Visit(Circle circle);
+    void Visit(Rectangle rectangle);
+    void Visit(Triangle triangle);
+}
+public class Rectangle : IShape
+{
+    public double Width { get; set; }
+    public double Height { get; set; }
+
+    public Rectangle(double width, double height)
+    {
+        Width = width;
+        Height = height;
+    }
+
+    public void Accept(IShapeVisitor visitor)
+    {
+        visitor.Visit(this);
+    }
+}
+public class Triangle : IShape
+{
+    public double SideA { get; set; }
+    public double SideB { get; set; }
+    public double SideC { get; set; }
+
+    public Triangle(double a, double b, double c)
+    {
+        SideA = a;
+        SideB = b;
+        SideC = c;
+    }
+
+    public void Accept(IShapeVisitor visitor)
+    {
+        visitor.Visit(this);
+    }
+}
+// Посетитель для вычисления площади
+public class AreaVisitor : IShapeVisitor
+{
+    public double TotalArea { get; private set; }
+
+    public void Visit(Rectangle rectangle)
+    {
+        TotalArea += rectangle.Width * rectangle.Height;
+    }
+
+    public void Visit(Triangle triangle)
+    {
+        // Формула Герона
+        double p = (triangle.SideA + triangle.SideB + triangle.SideC) / 2;
+        TotalArea += Math.Sqrt(p * (p - triangle.SideA) * (p - triangle.SideB) * (p - triangle.SideC));
+    }
+}
+// Посетитель для вычисления периметра
+public class PerimeterVisitor : IShapeVisitor
+{
+    public double TotalPerimeter { get; private set; }
+
+    public void Visit(Rectangle rectangle)
+    {
+        TotalPerimeter += 2 * (rectangle.Width + rectangle.Height);
+    }
+
+    public void Visit(Triangle triangle)
+    {
+        TotalPerimeter += triangle.SideA + triangle.SideB + triangle.SideC;
+    }
+}
+// Создаем коллекцию фигур
+var shapes = new List<IShape>
+{
+    new Rectangle(4, 6),
+    new Triangle(3, 4, 5)
+};
+
+// Вычисляем общую площадь
+var areaVisitor = new AreaVisitor();
+foreach (var shape in shapes)
+{
+    shape.Accept(areaVisitor);
+}
+Console.WriteLine($"Общая площадь: {areaVisitor.TotalArea}");
+
+// Вычисляем общий периметр
+var perimeterVisitor = new PerimeterVisitor();
+foreach (var shape in shapes)
+{
+    shape.Accept(perimeterVisitor);
+}
+Console.WriteLine($"Общий периметр: {perimeterVisitor.TotalPerimeter}");
+
+Visitor — поведенческий паттерн проектирования, который позволяет добавлять новые операции к классам без изменения их кода, делегируя эти операции специальным объектам-посетителям.
+
+Тип паттерна
+Visitor относится к поведенческим паттернам, так как он определяет алгоритмы и способы взаимодействия объектов между собой.
+
+Основная цель паттерна Visitor — обеспечить возможность добавления новых операций к классам без изменения их исходного кода, что особенно важно при работе с неизменяемыми или сторонними библиотеками.
+
+Паттерн особенно полезен в следующих случаях:
+Когда необходимо добавить новые операции к иерархии классов
+При работе с комплексными структурами данных
+Когда нужно избежать модификации существующих классов
+При необходимости выполнения операций, зависящих от типа объекта
+
+Компоненты паттерна
+Visitor — интерфейс, определяющий операцию для каждого класса в структуре
+ConcreteVisitor — конкретные классы, реализующие операции
+Element — интерфейс элементов, принимающих посетителей
+ConcreteElement — конкретные элементы структуры
+ObjectStructure — объект, содержащий элементы
+
+Метафоры из реального мира
+Инспектор — проверяет различные объекты (машины, здания) по разным критериям
+
+Потенциальные проблемы
+При использовании паттерна Visitor могут возникнуть следующие проблемы:
+Нарушение принципа единственной ответственности — классы могут получить слишком много обязанностей
+Сложность поддержки — при изменении иерархии классов требуется изменение всех посетителей
+Увеличение сложности кода — из-за необходимости создания множества методов
