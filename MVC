@@ -1,0 +1,108 @@
+// Модель
+public class UserModel
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public bool Save()
+    {
+        // Логика сохранения (например, в БД)
+        Console.WriteLine($"Данные сохранены: {Name}, {Age} лет");
+        return true;
+    }
+}
+// Представление
+public class UserView
+{
+    public void DisplayUserInfo(string name, int age)
+    {
+        Console.WriteLine($"Пользователь: {name}, Возраст: {age}");
+    }
+
+    public (string name, int age) GetUserInput()
+    {
+        Console.Write("Введите имя: ");
+        string name = Console.ReadLine();
+
+        Console.Write("Введите возраст: ");
+        int age = int.Parse(Console.ReadLine());
+
+        return (name, age);
+    }
+}
+// Контроллер
+public class UserController
+{
+    private readonly UserModel _model;
+    private readonly UserView _view;
+
+    public UserController(UserModel model, UserView view)
+    {
+        _model = model;
+        _view = view;
+    }
+
+    public void UpdateUser()
+    {
+        // Получаем данные от пользователя
+        var (name, age) = _view.GetUserInput();
+
+        // Обновляем модель
+        _model.Name = name;
+        _model.Age = age;
+
+        // Сохраняем
+        if (_model.Save())
+        {
+            // Показываем результат
+            _view.DisplayUserInfo(_model.Name, _model.Age);
+        }
+    }
+}
+// Исполнение
+class Program
+{
+    static void Main()
+    {
+        // Инициализация компонентов MVC
+        var model = new UserModel();
+        var view = new UserView();
+        var controller = new UserController(model, view);
+
+        // Запуск взаимодействия
+        controller.UpdateUser();
+    }
+}
+
+Паттерн MVC (Model-View-Controller)
+Тип: Архитектурный (Structural) паттерн проектирования (иногда относят к поведенческим).
+
+Описание:
+MVC разделяет приложение на три основных компонента:
+Model (Модель) – отвечает за данные и бизнес-логику.
+View (Представление) – отображает данные пользователю (UI).
+Controller (Контроллер) – обрабатывает пользовательский ввод и управляет взаимодействием между Model и View.
+
+Назначение:
+Разделение ответственности (SRP – Single Responsibility Principle).
+Упрощение поддержки и масштабирования.
+Возможность независимого изменения слоёв (например, замена UI без изменения бизнес-логики).
+Повторное использование кода (одна модель может использоваться в разных представлениях).
+
+Метафоры из реального мира:
+Ресторан:
+Model – кухня (готовит блюда, управляет ингредиентами).
+View – официант (подаёт готовые блюда клиенту).
+Controller – клиент (делает заказ, влияет на процесс).
+Телевизор:
+Model – телесигнал и декодирование.
+View – экран.
+Controller – пульт управления.
+
+Потенциальные проблемы:
+Сложность для маленьких проектов – избыточное разделение может усложнить простые приложения.
+Туговая связность View и Controller – в некоторых реализациях (например, в вебе) View и Controller могут быть слишком зависимы.
+Проблемы с обновлением View – если Model меняется часто, View может требовать постоянных обновлений (решается через Observer или MVVM).
+Неочевидное распределение логики – иногда сложно решить, куда отнести конкретную функцию (в Model или Controller).
+Производительность – в веб-приложениях из-за разделения могут быть дополнительные накладные расходы.
+
