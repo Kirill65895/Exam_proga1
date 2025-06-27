@@ -1,0 +1,98 @@
+// Абстрактные продукты
+public interface IButton
+{
+    void Render();
+}
+
+public interface ICheckbox
+{
+    void Toggle();
+}
+--------
+// Продукты Windows-стиля
+public class WindowsButton : IButton
+{
+    public void Render() => Console.WriteLine("Отрисована Windows кнопка");
+}
+public class WindowsCheckbox : ICheckbox
+{
+    public void Toggle() => Console.WriteLine("Windows чекбокс переключен");
+}
+// Продукты MacOS-стиля
+public class MacButton : IButton
+{
+    public void Render() => Console.WriteLine("Отрисована MacOS кнопка");
+}
+public class MacCheckbox : ICheckbox
+{
+    public void Toggle() => Console.WriteLine("MacOS чекбокс переключен");
+}
+--------
+public interface IUIFactory
+{
+    IButton CreateButton();
+    ICheckbox CreateCheckbox();
+}
+--------
+public class WindowsUIFactory : IUIFactory
+{
+    public IButton CreateButton() => new WindowsButton();
+    public ICheckbox CreateCheckbox() => new WindowsCheckbox();
+}
+public class MacUIFactory : IUIFactory
+{
+    public IButton CreateButton() => new MacButton();
+    public ICheckbox CreateCheckbox() => new MacCheckbox();
+}
+--------
+public class Application
+{
+    private readonly IButton _button;
+    private readonly ICheckbox _checkbox;
+
+    public Application(IUIFactory factory)
+    {
+        _button = factory.CreateButton();
+        _checkbox = factory.CreateCheckbox();
+    }
+
+    public void RenderUI()
+    {
+        _button.Render();
+        _checkbox.Toggle();
+    }
+}
+--------
+// Создаем приложение с Windows-интерфейсом
+var windowsApp = new Application(new WindowsUIFactory());
+windowsApp.RenderUI();
+
+// Создаем приложение с MacOS-интерфейсом
+var macApp = new Application(new MacUIFactory());
+macApp.RenderUI();
+
+_____________{Описание}_____________
+Тип паттерна
+Порождающий паттерн проектирования, который предоставляет интерфейс для создания семейств взаимосвязанных или взаимозависимых объектов, не специфицируя их конкретных классов.
+
+Abstract Factory (Абстрактная фабрика) — это порождающий паттерн, который позволяет создавать семейства связанных объектов, не привязываясь к конкретным классам создаваемых объектов. Он предоставляет интерфейс для создания целых семейств продуктов.
+
+Назначение паттерна
+Создание семейств взаимосвязанных объектов
+Обеспечение независимости клиентов от конкретных классов
+Гарантирование совместимости создаваемых объектов
+Поддержка добавления новых семейств продуктов без изменения существующего кода
+
+Основные компоненты паттерна
+AbstractFactory — интерфейс фабрики, определяющий набор создаваемых продуктов
+ConcreteFactory — конкретные реализации фабрик
+AbstractProduct — интерфейсы продуктов
+Product — конкретные продукты
+
+Метафоры из реального мира
+Мебельный магазин: разные фабрики производят комплекты мебели (диван + кресло + стол) в разных стилях
+
+Потенциальные проблемы
+Сложность расширения: добавление новых продуктов требует изменения всех конкретных фабрик
+Увеличение сложности: паттерн может стать излишне сложным при большом количестве продуктов
+Зависимость от интерфейсов: все продукты должны соответствовать общим интерфейсам
