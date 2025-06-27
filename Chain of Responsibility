@@ -1,0 +1,105 @@
+public abstract class Handler
+{
+    protected Handler _nextHandler;
+
+    public Handler SetNext(Handler next)
+    {
+        _nextHandler = next;
+        return next; // Возвращаем next для fluent-стиля
+    }
+
+    public abstract void HandleRequest(int request);
+}
+// Отрабочики 
+public class ConcreteHandler1 : Handler
+{
+    public override void HandleRequest(int request)
+    {
+        if (request <= 10)
+        {
+            Console.WriteLine($"Запрос {request} обработан в ConcreteHandler1");
+        }
+        else if (_nextHandler != null)
+        {
+            _nextHandler.HandleRequest(request);
+        }
+        else
+        {
+            Console.WriteLine($"Запрос {request} никто не обработал!");
+        }
+    }
+}
+public class ConcreteHandler2 : Handler
+{
+    public override void HandleRequest(int request)
+    {
+        if (request > 10 && request <= 20)
+        {
+            Console.WriteLine($"Запрос {request} обработан в ConcreteHandler2");
+        }
+        else if (_nextHandler != null)
+        {
+            _nextHandler.HandleRequest(request);
+        }
+        else
+        {
+            Console.WriteLine($"Запрос {request} никто не обработал!");
+        }
+    }
+}
+public class ConcreteHandler3 : Handler
+{
+    public override void HandleRequest(int request)
+    {
+        if (request > 20)
+        {
+            Console.WriteLine($"Запрос {request} обработан в ConcreteHandler3");
+        }
+        else if (_nextHandler != null)
+        {
+            _nextHandler.HandleRequest(request);
+        }
+        else
+        {
+            Console.WriteLine($"Запрос {request} никто не обработал!");
+        }
+    }
+}
+// Выполнение
+var handler1 = new ConcreteHandler1();
+var handler2 = new ConcreteHandler2();
+var handler3 = new ConcreteHandler3();
+
+// Настраиваем цепочку
+handler1.SetNext(handler2).SetNext(handler3);
+
+// Тестируем
+handler1.HandleRequest(5);   // Обработает handler1
+handler1.HandleRequest(15);  // Обработает handler2
+handler1.HandleRequest(25);  // Обработает handler3
+handler1.HandleRequest(100); // Обработает handler3
+
+Chain of Responsibility — поведенческий паттерн проектирования, который позволяет передавать запросы последовательно через цепочку обработчиков до тех пор, пока один из них не обработает запрос.
+
+Тип паттерна
+Chain of Responsibility относится к поведенческим паттернам, так как определяет алгоритмы и способы взаимодействия объектов между собой.
+
+Основная цель паттерна — избежать привязки отправителя запроса к его получателю, позволяя обрабатывать запросы нескольким объектам динамически.
+Паттерн особенно полезен в следующих случаях:
+Когда необходимо обработать запрос несколькими объектами
+При необходимости динамически определять получателей запросов
+Когда требуется обеспечить слабую связанность компонентов
+При необходимости изменять цепочку обработчиков во время выполнения
+
+Компоненты паттерна
+Handler — интерфейс или абстрактный класс, определяющий метод обработки запроса
+ConcreteHandler — конкретные классы, реализующие обработку запросов
+
+Метафоры из реального мира
+Система обработки документов — документы передаются от одного руководителя к другому до получения одобрения
+
+Потенциальные проблемы
+При использовании паттерна Chain of Responsibility могут возникнуть следующие проблемы:
+Бесконечные циклы — если цепочка замыкается сама на себя
+Потеря запроса — если никто из обработчиков не может обработать запрос
+Снижение производительности — из-за последовательной передачи запросов
