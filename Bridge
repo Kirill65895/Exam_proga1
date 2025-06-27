@@ -1,0 +1,121 @@
+// Абстракция - определяет интерфейс высокого уровня
+public abstract class RemoteControl
+{
+    protected IDevice _device;
+
+    public RemoteControl(IDevice device)
+    {
+        _device = device;
+    }
+
+    public abstract void TogglePower();
+    public abstract void VolumeUp();
+    public abstract void VolumeDown();
+}
+// Реализация - интерфейс для конкретных устройств
+public interface IDevice
+{
+    bool IsEnabled { get; }
+    void Enable();
+    void Disable();
+    int Volume { get; set; }
+}
+// Конкретная реализация - TV
+public class Tv : IDevice
+{
+    private bool _isOn;
+    private int _volume;
+
+    public bool IsEnabled => _isOn;
+
+    public void Enable()
+    {
+        _isOn = true;
+        Console.WriteLine("Телевизор включен");
+    }
+
+    public void Disable()
+    {
+        _isOn = false;
+        Console.WriteLine("Телевизор выключен");
+    }
+
+    public int Volume
+    {
+        get => _volume;
+        set
+        {
+            _volume = value;
+            Console.WriteLine($"Громкость TV: {_volume}");
+        }
+    }
+}
+// Продвинутый пульт
+public class AdvancedRemoteControl : RemoteControl
+{
+    public AdvancedRemoteControl(IDevice device) : base(device) { }
+
+    public override void TogglePower()
+    {
+        if (_device.IsEnabled)
+            _device.Disable();
+        else
+            _device.Enable();
+    }
+
+    public override void VolumeUp()
+    {
+        _device.Volume += 10;
+    }
+
+    public override void VolumeDown()
+    {
+        _device.Volume -= 10;
+    }
+
+    public void Mute()
+    {
+        _device.Volume = 0;
+        Console.WriteLine("Устройство заглушено");
+    }
+}
+class Program
+{
+    static void Main()
+    {
+        // Связываем абстракцию (пульт) с реализацией (TV)
+        var tv = new Tv();
+        var remote = new AdvancedRemoteControl(tv);
+
+        remote.TogglePower();  // Включаем TV
+        remote.VolumeUp();     // Громкость TV: 10
+        remote.Mute();        // Устройство заглушено
+    }
+}
+
+Bridge (Мост) — структурный паттерн проектирования, который разделяет абстракцию и реализацию таким образом, чтобы они могли развиваться независимо друг от друга.
+
+Тип паттерна
+Bridge относится к структурным паттернам, так как он фокусируется на организации классов и объектов для обеспечения их эффективной коммуникации.
+
+Основная цель паттерна Bridge — устранить жёсткую привязку между абстракцией и её реализацией, позволяя им изменяться независимо.
+Паттерн особенно полезен в следующих случаях:
+Когда необходимо разделить код на модули с разными циклами изменений
+При работе с несколькими платформами или системами
+Когда нужно избежать создания множества подклассов
+При необходимости динамической смены реализации
+
+Компоненты паттерна
+Abstraction — определяет базовый интерфейс
+RefinedAbstraction — расширяет интерфейс абстракции
+Implementor — определяет интерфейс реализации
+ConcreteImplementor — реализует интерфейс реализации
+
+Метафоры из реального мира
+Электрическая розетка и прибор — розетка (абстракция) может работать с разными приборами (реализация)
+
+Потенциальные проблемы
+При использовании паттерна Bridge могут возникнуть следующие проблемы:
+Сложность понимания — паттерн может быть сложным для понимания новичками
+Избыточность кода — создание дополнительных интерфейсов и классов
+Усложнение архитектуры — может привести к излишней сложности системы
