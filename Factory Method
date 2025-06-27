@@ -1,0 +1,70 @@
+// Абстрактный создатель (Creator)
+public abstract class DocumentCreator
+{
+    // Фабричный метод (может быть абстрактным или иметь реализацию по умолчанию)
+    public abstract IDocument CreateDocument();
+
+    // Дополнительная логика работы с документом
+    public void OpenDocument()
+    {
+        IDocument doc = CreateDocument();
+        doc.Open();
+    }
+}
+// Интерфейс
+public interface IDocument
+{
+    void Open();
+    void Save();
+}
+// Продукты
+public class TextDocument : IDocument
+{
+    public void Open() => Console.WriteLine("Текстовый документ открыт");
+    public void Save() => Console.WriteLine("Текстовый документ сохранен");
+}
+public class SpreadsheetDocument : IDocument
+{
+    public void Open() => Console.WriteLine("Таблица открыта");
+    public void Save() => Console.WriteLine("Таблица сохранена");
+}
+// Создатели
+public class TextDocumentCreator : DocumentCreator
+{
+    public override IDocument CreateDocument() => new TextDocument();
+}
+public class SpreadsheetDocumentCreator : DocumentCreator
+{
+    public override IDocument CreateDocument() => new SpreadsheetDocument();
+}
+// Использование
+DocumentCreator creator = new TextDocumentCreator();
+creator.OpenDocument(); // Создаст и откроет текстовый документ
+
+creator = new SpreadsheetDocumentCreator();
+creator.OpenDocument(); // Создаст и откроет таблицу
+
+Тип паттерна
+Порождающий паттерн проектирования, который определяет интерфейс для создания объектов, позволяя подклассам изменять тип создаваемых объектов.
+
+Factory Method (Фабричный метод) — это порождающий паттерн, предоставляющий интерфейс для создания объектов, позволяя классам делегировать создание объектов подклассам. В отличие от простого фабричного метода, здесь создание объекта делегируется подклассам.
+
+Назначение паттерна
+Изоляция кода создания объектов от кода использования
+Гибкость при работе с различными типами объектов
+Расширяемость системы без изменения существующего кода
+Абстрагирование процесса создания объектов
+
+Основные компоненты паттерна
+AbstractProduct — интерфейс или абстрактный класс для создаваемых продуктов
+ConcreteProduct — конкретные классы продуктов
+Creator — абстрактный класс, определяющий фабричный метод
+ConcreteCreator — конкретные классы, переопределяющие фабричный метод
+
+Метафоры из реального мира
+Кондитерская фабрика: основная фабрика определяет процесс производства сладостей, но конкретные виды сладостей создаются на специализированных линиях
+
+Потенциальные проблемы
+Увеличение количества классов: каждый новый тип продукта требует создания нового класса
+Нарушение принципа единственной ответственности: класс-создатель может нести дополнительную ответственность за создание объектов
+Сложность поддержки: при большом количестве продуктов код может стать трудно поддерживаемым
