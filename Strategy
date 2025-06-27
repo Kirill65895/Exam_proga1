@@ -1,0 +1,89 @@
+// Общий интерфейс для всех стратегий
+public interface ISortingStrategy
+{
+    void Sort(int[] data);
+}
+// Стратегия 1: Быстрая сортировка (QuickSort)
+public class QuickSortStrategy : ISortingStrategy
+{
+    public void Sort(int[] data)
+    {
+        Array.Sort(data); // Используем встроенную быструю сортировку
+        Console.WriteLine("Сортировка QuickSort");
+    }
+}
+// Стратегия 2: Пузырьковая сортировка (BubbleSort)
+public class BubbleSortStrategy : ISortingStrategy
+{
+    public void Sort(int[] data)
+    {
+        for (int i = 0; i < data.Length - 1; i++)
+        {
+            for (int j = 0; j < data.Length - i - 1; j++)
+            {
+                if (data[j] > data[j + 1])
+                {
+                    (data[j], data[j + 1]) = (data[j + 1], data[j]);
+                }
+            }
+        }
+        Console.WriteLine("Сортировка BubbleSort");
+    }
+}
+public class Sorter
+{
+    private ISortingStrategy _strategy;
+
+    public Sorter(ISortingStrategy strategy)
+    {
+        _strategy = strategy;
+    }
+
+    // Метод для смены стратегии на лету
+    public void SetStrategy(ISortingStrategy strategy)
+    {
+        _strategy = strategy;
+    }
+
+    public void ExecuteSort(int[] data)
+    {
+        _strategy.Sort(data);
+    }
+}
+var data = new[] {5, 2, 8, 1, 9};
+
+var sorter = new Sorter(new QuickSortStrategy());
+sorter.ExecuteSort(data); // QuickSort
+Console.WriteLine(string.Join(", ", data)); // 1, 2, 5, 8, 9
+
+sorter.SetStrategy(new BubbleSortStrategy());
+sorter.ExecuteSort(data); // BubbleSort
+Console.WriteLine(string.Join(", ", data)); // 1, 2, 5, 8, 9
+
+
+Strategy — поведенческий паттерн проектирования, который определяет семейство алгоритмов, инкапсулирует каждый из них и делает их взаимозаменяемыми.
+
+Тип паттерна
+Strategy относится к поведенческим паттернам, так как он определяет алгоритмы и способы взаимодействия объектов между собой.
+
+Описание и назначение
+Основная цель паттерна Strategy — выделить семейство алгоритмов, сделать их взаимозаменяемыми и обеспечить возможность их динамической замены во время выполнения программы.
+Паттерн особенно полезен в следующих случаях:
+Когда в системе используется множество похожих алгоритмов
+При необходимости динамической смены алгоритмов
+Когда нужно скрыть детали реализации алгоритмов от клиентов
+Когда алгоритмы нужно менять во время выполнения программы
+
+Компоненты паттерна
+Strategy — интерфейс или абстрактный класс, определяющий контракт алгоритма
+ConcreteStrategy — конкретные классы, реализующие алгоритмы
+Context — класс, использующий стратегию для выполнения алгоритма
+
+Метафоры из реального мира
+Различные способы оплаты в интернет-магазине (наличные, карта, электронные деньги)
+
+Потенциальные проблемы
+При использовании паттерна Strategy могут возникнуть следующие проблемы:
+Увеличение количества классов — необходимость создания отдельных классов для каждого алгоритма
+Сложность выбора стратегии — если алгоритмы имеют много общего
+Нарушение инкапсуляции — если стратегии получают доступ к внутренним данным контекста
